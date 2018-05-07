@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!--TODO hdfs-->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://h1:8020</value>
+    </property>
+
+    <!--TODO hbase-->
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>h1,h2,h3,h4</value>
+    </property>
+</configuration>

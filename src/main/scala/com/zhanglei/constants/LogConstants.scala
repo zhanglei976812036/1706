@@ -18,6 +18,7 @@ object LogConstants {
   final val LOG_COLUMNS_NAME_OS_VERSION = "osVersion"
   //设备型号
   final val LOG_COLUMNS_NAME_MODEL_NUM = "modeNun"
+  final val LOG_COLUMNS_NAME_DEVICE_ID = "deviceId"
   final val LOG_HBASE_TABLE:String = "kugou_music_log"
   final val LOG_HBASE_TABLE_FAMILY:String = "log"
 }

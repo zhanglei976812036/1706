@@ -1,9 +1,10 @@
-package com.zhanglei.task
+package com.zhanglei.task.analysislog
 
 import java.io.IOException
+
 import com.zhanglei.caseclass.IPRule
 import com.zhanglei.common.LogAnalysis
-import com.zhanglei.constants.{LogConstants, GlobalConstants}
+import com.zhanglei.constants.{GlobalConstants, LogConstants}
 import com.zhanglei.utils.Utils
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}

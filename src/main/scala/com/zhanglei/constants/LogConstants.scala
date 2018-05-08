@@ -21,4 +21,16 @@ object LogConstants {
   final val LOG_COLUMNS_NAME_DEVICE_ID = "deviceId"
   final val LOG_HBASE_TABLE:String = "kugou_music_log"
   final val LOG_HBASE_TABLE_FAMILY:String = "log"
+  final val LOG_COLUMNS_NAME_ALBUMID = "modeNun"
+  //行为标识key
+  final val LOG_COLUMNS_NAME_BEHAVIORKEY = "behaviorKey"
+  //节目id
+  final val LOG_COLUMNS_NAME_PROGRAMID = "programId"
+  //直播id
+  final val LOG_COLUMNS_NAME_ANCHORID = "anchorId"
+  //app区域xingx
+  final val LOG_COLUMNS_NAME_ZOOGKEY = "zoogKey"
+
+
+
 }

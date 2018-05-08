@@ -43,7 +43,7 @@ object LogAnalysis {
       }
     }
   }
-
+  //解析behaviorData
   def handlerBehaviorData(logMap: mutable.Map[String, String]) = {
     val behavior = logMap.getOrElse(LogConstants.LOG_COLUMNS_NAME_BEHAVIOR_DATA,null)
     if(behavior != null){
@@ -56,7 +56,7 @@ object LogAnalysis {
       })
     }
   }
-
+  //设备信息
   def handlerDevice(deviceString: String, logMap: mutable.Map[String, String]) = {
     try{
       val fields = deviceString.split(";")

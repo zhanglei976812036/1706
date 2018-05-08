@@ -30,7 +30,7 @@ object IPAnalysis {
           break()
         }else if(numIP < ipRule.startIP){
           max = middle - 1
-        }else if(numIP < ipRule.endIP){
+        }else if(numIP > ipRule.endIP){
           min = middle + 1
         }
       }

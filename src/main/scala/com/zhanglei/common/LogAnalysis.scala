@@ -34,7 +34,7 @@ object LogAnalysis {
             logMap.put(LogConstants.LOG_COLUMNS_NAME_BEHAVIOR_FLAG,"pData")
           }
           val base64EncodeString = data(1)
-          val jsonStr = new Predef.String(Utils.base64Decode(base64EncodeString))
+          val jsonStr = new String(Utils.base64Decode(base64EncodeString))
           JSON.parseObject(jsonStr).entrySet().toArray().foreach(t => {
             val kv = t.toString.split("=")
             logMap.put(kv(0),kv(1))

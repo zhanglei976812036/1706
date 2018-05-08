@@ -14,7 +14,7 @@ object Utils {
     pattern.matcher(ip).matches()
   }
   def parseLogServerTimeToLong(accessTime:String) = {
-    val simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy:HH:mm:ss +8000",Locale.ENGLISH)
+    val simpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss +0800",Locale.ENGLISH)
     val date = simpleDateFormat.parse(accessTime)
     date.getTime
   }

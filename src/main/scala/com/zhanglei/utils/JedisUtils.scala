@@ -7,7 +7,7 @@ import redis.clients.jedis.{JedisPool, JedisPoolConfig}
   */
 object JedisUtils {
   val config = new JedisPoolConfig()
-  val jedisPool = new JedisPool(config,"h3",6379,2)
+  val jedisPool = new JedisPool(config,"h3",6379,0)
 
   def getConnection() = {
     jedisPool.getResource

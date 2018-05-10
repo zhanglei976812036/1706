@@ -123,6 +123,6 @@ object RetentionRateTask {
           |统计当天新增用户为零
         """.stripMargin)
     }
-    sparkSession.close()
+    sparkSession.stop()
   }
 }

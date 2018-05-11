@@ -81,7 +81,8 @@ object LogAnalysis {
           val fields = logText.split("[|]")
           if(fields.length == 8){
             logMap = mutable.Map[String,String]()
-            handlerIP(fields(0),ipRules,logMap)
+            if(ipRules != null)
+              handlerIP(fields(0),ipRules,logMap)
             logMap.put(LogConstants.LOG_COLUMNS_NAME_ACCESS_TIME,Utils.parseLogServerTimeToLong(fields(3)).toString)
             if(logText.contains("GET")){
               logMap.put(LogConstants.LOG_COLUMNS_NAME_REQUEST_TYPE,"GET")

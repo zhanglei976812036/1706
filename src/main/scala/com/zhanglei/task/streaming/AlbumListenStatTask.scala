@@ -1,4 +1,4 @@
-package com.zhanglei.task
+package com.zhanglei.task.streaming
 
 import com.zhanglei.common.LogAnalysis
 import com.zhanglei.constants.LogConstants
@@ -6,52 +6,55 @@ import com.zhanglei.enum.BehaviorKeyEnum
 import com.zhanglei.utils.JedisUtils
 import kafka.serializer.StringDecoder
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.sql.catalyst.expressions.Second
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.spark.{SparkContext, SparkConf}
-
+import org.apache.spark.{SparkConf, SparkContext}
 /**
-  * Created by Administrator on 2018/5/11.
-  * * 启动kafka命令
-  * /home/bigdata/kafka/bin/kafka-server-start.sh  -daemon /home/bigdata/kafka/config/server.properties
+  * Created by Administrator on 2018/5/14.
+  * 启动kafka命令
+  * /opt/apps/kafka/bin/kafka-server-start.sh  -daemon /opt/apps/kafka/config/server.properties
   * ##查看所有topic##
-  * /home/bigdata/kafka/bin/kafka-topics.sh --list --zookeeper  h1:2181
+  * /opt/apps/kafka/bin/kafka-topics.sh --list --zookeeper  mini1:2181
   * ##创建topic##
-  * /home/bigdata/kafka/bin/kafka-topics.sh --create --zookeeper h1:2181 --replication-factor 1 --partitions 3 --topic kugou_music_log
+  * /opt/apps/kafka/bin/kafka-topics.sh --create --zookeeper mini1:2181 --replication-factor 1 --partitions 3 --topic kugou_music_log
   * ##客户日志生产者##
-  * /home/bigdata/kafka/bin/kafka-console-producer.sh --broker-list h1:9092 --topic kugou_music_log
+  * /opt/apps/kafka/bin/kafka-console-producer.sh --broker-list mini1:9092 --topic kugou_music_log
   * ##客户日志消费者##
-  * /home/bigdata/kafka/bin/kafka-console-consumer.sh --zookeeper h1:2181  --topic kugou_music_log
+  * /opt/apps/kafka/bin/kafka-console-consumer.sh --zookeeper mini1:2181  --topic kugou_music_log
   */
 object AlbumListenStatTask {
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.WARN)
     val sparkConf = new SparkConf().setAppName(this.getClass.getSimpleName).setMaster("local[*]")
     val sc = new SparkContext(sparkConf)
-    val ssc = new StreamingContext(sc,Seconds(3))
-    val kafkaParams = Map[String,String](
+    val ssc = new StreamingContext(sc, Seconds(3))
+    val kafkaParams = Map[String, String](
       "zookeeper.connect" -> "h1:2181,h2:2181,h3:2181,h4:2181",
+      //消费者组id
       "group.id" -> "kugou_consumer_group",
+      //提交消费偏移量的时间间隔
       "auto.commit.interval.ms" -> "3000",
+      //从最大消息偏移量开始消费
       "auto.offset.reset" -> "largest"
     )
-    val kafkaInputDstream = KafkaUtils.createStream[String,String,StringDecoder,StringDecoder](ssc,kafkaParams,
-      Map("kugou_musci_log" -> 3),StorageLevel.MEMORY_ONLY_SER).map(_._2)
+
+    val kafkaInputDstream = KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, Map("kugou_music_log" -> 3), StorageLevel.MEMORY_ONLY_SER)
+      .map(_._2)
+
     kafkaInputDstream.map(logText => {
-      val map = LogAnalysis.analysisLog(logText,null)
+      val map = LogAnalysis.analysisLog(logText, null)
       map
     }).filter(map =>
       map != null
-      && map.contains(LogConstants.LOG_COLUMNS_NAME_BEHAVIOR_KEY)
-      && map(LogConstants.LOG_COLUMNS_NAME_BEHAVIOR_KEY).equals(BehaviorKeyEnum.DFSJ400.toString)
+        && map.contains(LogConstants.LOG_COLUMNS_NAME_BEHAVIOR_KEY)
+        && map(LogConstants.LOG_COLUMNS_NAME_BEHAVIOR_KEY).equals(BehaviorKeyEnum.DFSJ400.toString)
     ).map(map => {
       val albumId = map(LogConstants.LOG_COLUMNS_NAME_ALBUM_ID)
       val programId = map(LogConstants.LOG_COLUMNS_NAME_PROGRAM_ID)
-      ((albumId,programId),1)
-    }).reduceByKey(_+_).foreachRDD(rdd =>{
-      if(!rdd.isEmpty()){
+      ((albumId, programId), 1)
+    }).reduceByKey(_ + _).foreachRDD(rdd => {
+      if (!rdd.isEmpty()) {
         rdd.foreachPartition(partitionIter => {
           val jedisClient = JedisUtils.getConnection()
           partitionIter.foreach(t2 => {
@@ -62,15 +65,16 @@ object AlbumListenStatTask {
             val programField = "programId_"
             val albumIdField = "album_play_count"
             //专辑播放次数需要进行累加
-            jedisClient.hincrBy(key+albumId,albumIdField,playCount)
-            jedisClient.hincrBy(key+albumId,programField+programId,playCount)
+            jedisClient.hincrBy(key + albumId, albumIdField, playCount)
+            jedisClient.hincrBy(key + albumId, programField + programId, playCount)
           })
           jedisClient.close()
         })
       }
     })
+
     ssc.start()
     ssc.awaitTermination()
-  }
 
+  }
 }

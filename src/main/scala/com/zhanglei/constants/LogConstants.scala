@@ -39,4 +39,8 @@ object LogConstants {
   final val LOG_COLUMNS_NAME_ALBUM_ID = "albumId"
   //节目id
   final val LOG_COLUMNS_NAME_PROGRAM_ID = "programId"
+  //主播id
+  final val LOG_COLUMNS_NAME_ANCHOR_ID = "anchorId"
+  //播放时长
+  final val LOG_COLUMNS_NAME_PLAY_TIME= "playTime"
 }
